@@ -2,8 +2,8 @@
 title: "Activity 10 RMD"
 author: "Lily Mayer"
 date: "2023-11-05"
-output: html_document
-always_allow_html: yes
+output: 
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -86,9 +86,12 @@ First, we can create a scatterplot with price on the vertical axis and carat on 
 
 #This code chunk creates a scatterplot where we look at the price vs weight of each diamond, with a grouping by color. 
 ggplot(diamonds) + #creates framework
-aes(x = carat, y = price, colour = color) + #saves carat on horizontal, price on vertical, and color as color
-geom_point(shape = "circle", size = 1.25) + #initializes the glyphs as points
-scale_color_manual( #creates brighter colors for each color
+aes(x = carat, y = price, colour = color) + 
+  #saves carat on horizontal, price on vertical, and color as color
+geom_point(shape = "circle", size = 1.25) + 
+  #initializes the glyphs as points
+scale_color_manual( 
+  #creates brighter colors for each color
 values = c(D = "#FF002B",
 E = "#FFB300",
 F = "#FFFC00",
@@ -97,13 +100,15 @@ H = "#00B3FF",
 I = "#B280FC",
 J = "#FF61C3")
 ) +
-labs( #initializes labels
+labs( 
+  #initializes labels
 x = "Diamond Weight (Carat)",
 y = "Diamond Price (In US dollars)",
 title = "Diamond Weight (Carat) vs Diamond Price (Price) Categorized By Color",
 color = "Color"
 ) +
-expand_limits(y = seq(0,20000)) #expands the vertical axis to contain all points
+expand_limits(y = seq(0,20000)) 
+#expands the vertical axis to contain all points
 ```
 
 We can also create a summary table showing the frequency, minimum, first quintile, second quintile, median, third quintile, fourth quintile, maximum, mean, and standard deviation. We can observe that the minimum prices only vary by \$10 while the maximum prices vary by \$249. We can also observe that each of the means are much greater than their associated median, which means that the distributions are skewed to the right. In general, there is no clear direction of price vs cut, as a better cut does not automatically mean a higher price.
@@ -112,33 +117,34 @@ We can also create a summary table showing the frequency, minimum, first quintil
 #| fig.cap = 'Summary Table Showing Diamond Price Grouped By Cut'
 
 
-#This code chunk creates a summary table which shows summary statistics for each cut of diamond in the dataset. 
+#This code chunk creates a summary table which shows summary statistics for each cut of diamond in the dataset.
 diamondModel <- diamonds %>%
-select(cut, price) %>%
+  select(cut, price) %>%
   #We want only cut and price
-group_by(cut) %>%
+  group_by(cut) %>%
   #Values of cut will be our rows
-rename('Cut' = cut) %>%
-summarise(
-'Frequency' = n(),
-#Counts the number of diamonds
-'Minimum' = min(price, na.rm = TRUE),
-#Calculates the minimum value
-'First Quintile' = quantile(price, probs = .20, na.rm = TRUE),
-#Calculates the 20th percentile
-'Second Quintile' = quantile(price, probs = .40, na.rm = TRUE),
-#Calculates the 40th percentile
-'Median' = median(price, na.rm = TRUE),
-#Calculates the median or 50th percentile
-'Third Quintile' = quantile(price, probs = .60, na.rm = TRUE),
-#Calculates the 60th percentile
-'Fourth Quintile' = quantile(price, probs = .80, na.rm = TRUE),
-#Calculates the 80th percentile
-'Maximum' = max(price, na.rm = TRUE),
-#Calculates the maximum value
-'Mean' = mean(price, na.rm = TRUE),
-#Calculates the arithmetic mean
-'Standard Deviation' = sd(price, na.rm = TRUE))
+  rename('Cut' = cut) %>%
+  summarise(
+    'Frequency' = n(),
+    #Counts the number of diamonds
+    'Minimum' = min(price, na.rm = TRUE),
+    #Calculates the minimum value
+    'First Quintile' = quantile(price, probs = .20, na.rm = TRUE),
+    #Calculates the 20th percentile
+    'Second Quintile' = quantile(price, probs = .40, na.rm = TRUE),
+    #Calculates the 40th percentile
+    'Median' = median(price, na.rm = TRUE),
+    #Calculates the median or 50th percentile
+    'Third Quintile' = quantile(price, probs = .60, na.rm = TRUE),
+    #Calculates the 60th percentile
+    'Fourth Quintile' = quantile(price, probs = .80, na.rm = TRUE),
+    #Calculates the 80th percentile
+    'Maximum' = max(price, na.rm = TRUE),
+    #Calculates the maximum value
+    'Mean' = mean(price, na.rm = TRUE),
+    #Calculates the arithmetic mean
+    'Standard Deviation' = sd(price, na.rm = TRUE)
+  )
 #Calculates the standard deviation of the distribution
 
 diamondModelFinal <- diamondModel %>%
@@ -171,6 +177,10 @@ First, I have included an image of my working directory. All data for this assig
 ```{r Screenshot of File Directory, echo = FALSE}
 knitr::include_graphics('file_directory_image.png')
 ```
+
+I also have included a link to my GitHub Repository. 
+
+[GitHub Link](https://github.com/lmayer5596/Act10)
 
 
 ## Code Appendix
