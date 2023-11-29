@@ -1,0 +1,180 @@
+---
+title: "Activity 10 RMD"
+author: "Lily Mayer"
+date: "2023-11-05"
+output: html_document
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+
+#This code chunk loads all necessary packages on the date in which the RMD project was started
+knitr::opts_chunk$set(fig.pos = 'H', out.extra = '', echo = FALSE, dpi = 300)
+library(groundhog)
+pkgs <- c('ggplot2', 'dplyr', 'knitr', 'kableExtra')
+groundhog.library(pkgs, '2023-11-05')
+```
+
+## Collatz Conjecture
+
+The Collatz Conjecture is an arithmetic sequence which takes a number and performs operations to it until the number becomes 1, at which point the sequence ends. We express this conjecture as a function f(n) where if n is even then n = n/2, if n is odd then n = 3n + 1, and if n = 1 then we stop. We are looking at the 'stopping times' of this sequence, which is number of operations we have to do until the number becomes 1 and we stop the sequence. We will display the stopping times in a histogram.
+
+First, we must be able to generate the stopping time for a single number.
+
+```{r Collatz Conjecture Code}
+
+#This code chunk initializes the collatz function which calculates the stopping time for a given number
+collatz <- function(number, counter = 0) { 
+  #initializes function with a counter starting at 0
+  if (number == 1) { 
+    return(counter) 
+    #returns the number of steps it took and ends the loop
+  } else if (number %% 2 == 0) { 
+    #if number is even
+      counter = counter + 1 
+      #adds one to the step counter
+      return(collatz(number/2, counter)) 
+      #calls the function again using number / 2
+    } else { 
+      #if the number is odd
+      counter = counter + 1 
+      #adds one to the step counter
+      return(collatz(3*number + 1, counter)) 
+      #calls the function again using 3*number + 1
+      }
+}
+```
+
+However, the first function only takes a single number as an input. To calculate many numbers at once, which is the most efficient way to generate data for our histogram, we need to vectorize the function. Now we will vectorize the function and store the stopping times of input numbers 1 to 10,000 in a vector.
+
+```{r Vectorising Collatz Conjecture}
+
+#This code chunk allows the collatz function to receive a vector as input and will output a vector as well. This enables us to calculate the stopping time for many numbers at one time.
+vectorizedCollatz <- Vectorize(FUN = collatz) 
+#vectorizes the function
+numbers <- seq(1, 10000) 
+#saves the first 10000 positive integers in a sequence
+steps_first_10000 <- vectorizedCollatz(numbers) 
+#saves the result of those 10000 numbers in a vector
+```
+
+Now our code is ready to be visualized in a histogram, so we use the ggplot2 package to create a good-looking histogram. We use the vector of stopping times as the horizontal variable and the plot will display the frequency of each stopping time as the vertical variable, with 15 horizontal bins. We can see that the bins covering stopping times of around 25 - 60 are the tallest, so the most frequent stopping times are in that range with frequencies of almost 2,000. We can also see that the distribution is skewed to the right because there are some very large stopping times with very small frequencies.
+
+```{r Histogram of Stopping Times of Collatz Conjecture, echo = FALSE}
+#| fig.cap = 'Histogram of Stopping Times of Collatz Conjecture'
+
+#This code chunk creates a histogram of the stopping times calculated for numbers 1 to 10000
+ggplot(
+  mapping = aes(steps_first_10000)
+  #uses the stopping times vector as the x variable
+) + 
+  geom_histogram(bins = 15, color = 'black', fill = 'light grey') +
+  xlab('Stopping Time') +
+  ylab('Frequency') +
+  ggtitle('Histogram of Stopping Times')
+```
+
+## Diamonds
+
+The Diamonds data set is integrated in ggplot2 and it is a list of 53940 individual diamonds and their attributes. The listed attributes are carat, cut, color, clarity, depth (percentage), table (top width), price, x (length), y (width), and z (depth). We are interested in how the price can be affected by the other attributes.
+
+First, we can create a scatterplot with price on the vertical axis and carat on the horizontal axis. We will also have color represented as both shape and color of the glyphs on the graph. Observe that as diamond carat increases, so does price, with a large spike in price at a carat of 1. We can also observe that all color does not restrict a diamond's carat or price, but diamonds with a better color (closer to D), their prices increased faster than a diamond with a worse color (closer to J).
+
+```{r Scatterplot of Diamond Price vs Carat by Color, echo = FALSE}
+#| fig.cap = 'Scatterplot of Diamond Price vs Carat grouped by Color'
+
+
+#This code chunk creates a scatterplot where we look at the price vs weight of each diamond, with a grouping by color. 
+ggplot(diamonds) + #creates framework
+aes(x = carat, y = price, colour = color) + #saves carat on horizontal, price on vertical, and color as color
+geom_point(shape = "circle", size = 1.25) + #initializes the glyphs as points
+scale_color_manual( #creates brighter colors for each color
+values = c(D = "#FF002B",
+E = "#FFB300",
+F = "#FFFC00",
+G = "#1FFF09",
+H = "#00B3FF",
+I = "#B280FC",
+J = "#FF61C3")
+) +
+labs( #initializes labels
+x = "Diamond Weight (Carat)",
+y = "Diamond Price (In US dollars)",
+title = "Diamond Weight (Carat) vs Diamond Price (Price) Categorized By Color",
+color = "Color"
+) +
+expand_limits(y = seq(0,20000)) #expands the vertical axis to contain all points
+```
+
+We can also create a summary table showing the frequency, minimum, first quintile, second quintile, median, third quintile, fourth quintile, maximum, mean, and standard deviation. We can observe that the minimum prices only vary by \$10 while the maximum prices vary by \$249. We can also observe that each of the means are much greater than their associated median, which means that the distributions are skewed to the right. In general, there is no clear direction of price vs cut, as a better cut does not automatically mean a higher price.
+
+```{r Summary Table of Diamond Price by Cut, echo = FALSE}
+#| fig.cap = 'Summary Table Showing Diamond Price Grouped By Cut'
+
+
+#This code chunk creates a summary table which shows summary statistics for each cut of diamond in the dataset. 
+diamondModel <- diamonds %>%
+select(cut, price) %>%
+  #We want only cut and price
+group_by(cut) %>%
+  #Values of cut will be our rows
+rename('Cut' = cut) %>%
+summarise(
+'Frequency' = n(),
+#Counts the number of diamonds
+'Minimum' = min(price, na.rm = TRUE),
+#Calculates the minimum value
+'First Quintile' = quantile(price, probs = .20, na.rm = TRUE),
+#Calculates the 20th percentile
+'Second Quintile' = quantile(price, probs = .40, na.rm = TRUE),
+#Calculates the 40th percentile
+'Median' = median(price, na.rm = TRUE),
+#Calculates the median or 50th percentile
+'Third Quintile' = quantile(price, probs = .60, na.rm = TRUE),
+#Calculates the 60th percentile
+'Fourth Quintile' = quantile(price, probs = .80, na.rm = TRUE),
+#Calculates the 80th percentile
+'Maximum' = max(price, na.rm = TRUE),
+#Calculates the maximum value
+'Mean' = mean(price, na.rm = TRUE),
+#Calculates the arithmetic mean
+'Standard Deviation' = sd(price, na.rm = TRUE))
+#Calculates the standard deviation of the distribution
+
+diamondModelFinal <- diamondModel %>%
+kable(
+caption = 'Summary Statistics of Diamond Price By Cut',
+#Places a caption on the graph
+booktabs = TRUE,
+align = c('l', rep('c', 6))) %>%
+kableExtra::kable_styling(
+  latex_options = c('HOLD_position', 'scale_down'),
+  #scales table to stay on the page
+bootstrap_options = c('striped', 'condensed'),
+#stripes the background colors of the rows
+font_size = 16
+)
+
+diamondModelFinal
+```
+
+## Class Reflection
+
+I feel I have learned a lot in this course. I have a lot of experience with Python, but I had never touched R before this semester. I feel very proficient in the level of coding that we are doing, and I am really enjoying everything I can do with tables and visualizations that I cannot do in Python. After every assignment, I show my outputs to my friends and family because I am always very proud of how they turn out.
+
+I have learned how to navigate and troubleshoot R, and I use the internal documentation almost daily. I have learned the types of objects and data structures we use, and I am comfortable creating functions, data frames, summary tables, and data visualizations. Mostly, I have learned a new way to think. Coming from a background in Python, my first instinct is to write Python code in my head to solve these problems. Obviously, that doesn't work here, so it is a great exercise in perseverance and solving problems multiple ways until I have code and an output that I am proud of and happy to submit. I am really enjoying the lessons that I am learning and experience I am gaining through this course.
+
+## Assignment Requirements
+
+First, I have included an image of my working directory. All data for this assignment is from packages in R, so I need no other data files in the directory. The directory includes this RMD file, the project for this assignment, and the three knitted outputs. 
+
+```{r Screenshot of File Directory, echo = FALSE}
+knitr::include_graphics('file_directory_image.png')
+```
+
+
+## Code Appendix
+```{r, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+
+#This code chunk combines all previous code chunks into a vector then displays them all together without evaluating the code.
+```
