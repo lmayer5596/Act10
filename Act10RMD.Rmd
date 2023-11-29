@@ -3,12 +3,12 @@ title: "Activity 10 RMD"
 author: "Lily Mayer"
 date: "2023-11-05"
 output: 
-  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
-
-#This code chunk loads all necessary packages on the date in which the RMD project was started
+#This code chunk loads all necessary packages on the date in which the RMD project 
+#was started
 knitr::opts_chunk$set(fig.pos = 'H', out.extra = '', echo = FALSE, dpi = 300)
 library(groundhog)
 pkgs <- c('ggplot2', 'dplyr', 'knitr', 'kableExtra')
@@ -23,7 +23,8 @@ First, we must be able to generate the stopping time for a single number.
 
 ```{r Collatz Conjecture Code}
 
-#This code chunk initializes the collatz function which calculates the stopping time for a given number
+#This code chunk initializes the collatz function which calculates the stopping time 
+#for a given number
 collatz <- function(number, counter = 0) { 
   #initializes function with a counter starting at 0
   if (number == 1) { 
@@ -49,7 +50,9 @@ However, the first function only takes a single number as an input. To calculate
 
 ```{r Vectorising Collatz Conjecture}
 
-#This code chunk allows the collatz function to receive a vector as input and will output a vector as well. This enables us to calculate the stopping time for many numbers at one time.
+#This code chunk allows the collatz function to receive a vector as input and will 
+#output a vector as well. This enables us to calculate the stopping time for many numbers
+#at one time.
 vectorizedCollatz <- Vectorize(FUN = collatz) 
 #vectorizes the function
 numbers <- seq(1, 10000) 
@@ -63,7 +66,8 @@ Now our code is ready to be visualized in a histogram, so we use the ggplot2 pac
 ```{r Histogram of Stopping Times of Collatz Conjecture, echo = FALSE}
 #| fig.cap = 'Histogram of Stopping Times of Collatz Conjecture'
 
-#This code chunk creates a histogram of the stopping times calculated for numbers 1 to 10000
+#This code chunk creates a histogram of the stopping times calculated for numbers 
+#1 to 10000
 ggplot(
   mapping = aes(steps_first_10000)
   #uses the stopping times vector as the x variable
@@ -84,7 +88,8 @@ First, we can create a scatterplot with price on the vertical axis and carat on 
 #| fig.cap = 'Scatterplot of Diamond Price vs Carat grouped by Color'
 
 
-#This code chunk creates a scatterplot where we look at the price vs weight of each diamond, with a grouping by color. 
+#This code chunk creates a scatterplot where we look at the price vs weight of each 
+#diamond, with a grouping by color. 
 ggplot(diamonds) + #creates framework
 aes(x = carat, y = price, colour = color) + 
   #saves carat on horizontal, price on vertical, and color as color
@@ -117,7 +122,8 @@ We can also create a summary table showing the frequency, minimum, first quintil
 #| fig.cap = 'Summary Table Showing Diamond Price Grouped By Cut'
 
 
-#This code chunk creates a summary table which shows summary statistics for each cut of diamond in the dataset.
+#This code chunk creates a summary table which shows summary statistics for each cut 
+#of diamond in the dataset.
 diamondModel <- diamonds %>%
   select(cut, price) %>%
   #We want only cut and price
@@ -172,9 +178,11 @@ I have learned how to navigate and troubleshoot R, and I use the internal docume
 
 ## Assignment Requirements
 
-First, I have included an image of my working directory. All data for this assignment is from packages in R, so I need no other data files in the directory. The directory includes this RMD file, the project for this assignment, and the three knitted outputs. 
+First, I have included an image of my working directory. All data for this assignment is from packages in R, so I need no other data files in the directory. The directory includes this RMD file, the project for this assignment, and some knitted outputs. 
 
 ```{r Screenshot of File Directory, echo = FALSE}
+
+#This code chunk imports the screenshot using knitr
 knitr::include_graphics('file_directory_image.png')
 ```
 
@@ -186,5 +194,6 @@ I also have included a link to my GitHub Repository.
 ## Code Appendix
 ```{r, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
 
-#This code chunk combines all previous code chunks into a vector then displays them all together without evaluating the code.
+#This code chunk combines all previous code chunks into a vector then displays 
+#them all together without evaluating the code.
 ```
